@@ -1,7 +1,7 @@
 #ifndef UTIL_H_
 #define UTIL_H_
 
-#include "Common.h"
+#include "common.h"
 
 #include <sstream>
 #include <iostream>

@@ -34,7 +34,7 @@
                 "shavite3.c",
                 "skein.c",
                 "sm3.c",
-                "Sponge.c",
+                "sponge.c",
                 "tribus.c",
                 "whirlpoolx.c",
                 "x11.c",

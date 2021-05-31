@@ -23,7 +23,7 @@
 #include <time.h>
 
 #include "Lyra2.h"
-#include "Sponge.h"
+#include "sponge.h"
 
 /**
  * Executes Lyra2 based on the G function from Blake2b. This version supports salts and passwords
@@ -524,7 +524,7 @@ int LYRA2_3(void *K, uint64_t kLen, const void *pwd, uint64_t pwdlen, const void
     //==========================================================================/
 
     //============================ Wandering Phase =============================//
-    
+
     uint64_t index = 0;
     row = 0; //Resets the visitation to the first row of the memory matrix
     for (tau = 1; tau <= timeCost; tau++) {

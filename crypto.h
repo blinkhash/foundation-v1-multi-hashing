@@ -1,8 +1,8 @@
 #ifndef CRYPTO_H_
 #define CRYPTO_H_
 
-#include "Common.h"
-#include "Util.h"
+#include "common.h"
+#include "util.h"
 #include <string>
 #include <vector>
 #include <openssl/sha.h>
