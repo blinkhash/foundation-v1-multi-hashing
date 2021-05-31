@@ -1,40 +1,17 @@
-## This repo is looking for maintainers! Please reach out if interested.
+# Blinkhash Multi-Hashing
 
---------
+[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 
+This repository is a collection of hashing algorithms that are currently supported by Blinkhash. Each of these algorithms are leveraged by [blinkhash-stratum](https://github.com/blinkhash/blinkhash-stratum), which handles the majority of the mining process. To request for an unsupported algorithm to be added, open an issue or pull request and it will be addressed.  
 
+#### Need Support?
 
-node-multi-hashing
-===============
+If you need help with a code-related matter, the first place to look is our [Discord](https://www.discord.gg/x2vgyZP), where the developers will be available to answer any questions. However, please do not come to me with issues regarding setup. Use Google and the existing documentation for that.
 
-[![Build Status](https://travis-ci.org/zone117x/node-multi-hashing.png?branch=master)](https://travis-ci.org/zone117x/node-multi-hashing)
+---
 
-[![NPM](https://nodei.co/npm/multi-hashing.png?downloads=true&stars=true)](https://nodei.co/npm/multi-hashing/)
+### Credits
 
-Cryptocurrency hashing functions for node.js.
-
-Algorithms
-----------
-* quark
-* x11
-* x13
-* nist5
-* scrypt
-* scryptn
-* keccak
-* bcrypt
-* skein
-* groestl
-* blake
-* fugue
-* qubit
-* hefty1
-* shavite3
-* sha256d
-* lbry
-
-Credits
--------
 * [NSA](http://www.nsa.gov/) and [NIST](http://www.nist.gov/) for creation or sponsoring creation of SHA2 and SHA3 algos
 * [Keccak](http://en.wikipedia.org/wiki/Keccak) - Guido Bertoni, Joan Daemen, Michaël Peeters, and Gilles Van Assche
 * [Skein](http://en.wikipedia.org/wiki/Skein_(hash_function)) - Bruce Schneier, Stefan Lucks, Niels Ferguson, Doug Whiting, Mihir Bellare, Tadayoshi Kohno, Jon Callas and Jesse Walker.
@@ -45,3 +22,23 @@ Credits
 * [scrypt](http://en.wikipedia.org/wiki/Scrypt) - Colin Percival
 * [bcrypt](http://en.wikipedia.org/wiki/Bcrypt) - Niels Provos and David Mazières
 * [X11](http://www.darkcoin.io/), [Hefty1](http://heavycoin.github.io/about.html), [Quark](http://www.qrk.cc/) creators (they just mixed together a bunch of the above algos)
+* Any developers not mentioned who worked on the algorithms included in this repository
+
+---
+
+### Donations
+
+Maintaining this project has always been driven out of nothing more than a desire to give back to the mining community, however I always appreciate donations, especially if this repository helps you in any way.
+
+- Bitcoin: 3EbrVYLxN5WeQmPpL6owo3A7rJELXecbbc
+- Ethereum: 0xd3e3daED621d228244Fa89A3dd8AF07B52E72319
+- Litecoin: MFWpARrSADAy3Qj79C4pSasS9F156QipwC
+- ZCash: t1NSk8gyiou8TxWRZTVuUkfM5f9riopN58A
+
+---
+
+### License
+
+Released under the GNU General Public License v2. See http://www.gnu.org/licenses/gpl-2.0.html for more information
+
+---
