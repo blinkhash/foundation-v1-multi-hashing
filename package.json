@@ -1,19 +1,7 @@
 {
-    "name": "multi-hashing",
-    "version": "0.0.9",
+    "name": "blinkhash-multi-hashing",
+    "version": "0.0.2",
     "main": "multihashing",
-    "author": {
-        "name": "Matthew Little",
-        "email": "zone117x@gmail.com"
-    },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/zone117x/node-multi-hashing.git"
-    },
-    "dependencies": {
-        "bindings": "^1.3.0",
-        "nan": "^2.6.2"
-    },
     "keywords": [
         "scrypt",
         "script-n",
@@ -26,5 +14,23 @@
         "blake",
         "shavite",
         "fugue"
-    ]
+    ],
+    "homepage": "https://github.com/blinkhash/blinkhash-multi-hashing",
+    "bugs": {
+        "url": "https://github.com/blinkhash/blinkhash-multi-hashing/issues"
+    },
+    "license": "GPL-2.0",
+    "author": {
+        "name": "Nick Sarris"
+    },
+    "contributors": [],
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/zone117x/node-multi-hashing.git"
+    },
+    "dependencies": {
+        "bindings": "^1.3.0",
+        "nan": "^2.6.2"
+    },
+    "readmeFilename": "README.md"
 }
