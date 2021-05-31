@@ -72,38 +72,8 @@
                 "algorithms/sph/sph_jh.h",
                 "algorithms/sph/sph_skein.h"
             ],
-            'conditions': [
-                ['OS=="linux"',
-                  {
-                    'link_settings': {
-                      'libraries': [
-                        '-lgmp'
-                      ]
-                    }
-                  }
-                ],
-                ['OS=="mac"',
-                  {
-                    'link_settings': {
-                      'libraries': [
-                        '-lgmp'
-                      ]
-                    }
-                  }
-                ],
-                ['OS=="win"',
-                  {
-                    'link_settings': {
-                      'libraries': [
-                        '-lgmp.lib'
-                      ],
-                    }
-                  }
-                ]
-              ],
-            "include_dirs": [
-                "crypto"
-            ],
+            'conditions': [],
+            "include_dirs": [],
             "cflags_cc": [
                 "-std=c++0x"
             ],
