@@ -17,7 +17,6 @@
                 "gost.c",
                 "groestl.c",
                 "hefty1.c",
-                "hsr14.c",
                 "keccak.c",
                 "lbry.c",
                 "Lyra2.c",

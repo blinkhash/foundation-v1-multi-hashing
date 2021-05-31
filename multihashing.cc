@@ -16,7 +16,6 @@ extern "C" {
     #include "gost.h"
     #include "groestl.h"
     #include "hefty1.h"
-    #include "hsr14.h"
     #include "keccak.h"
     #include "lbry.h"
     #include "Lyra2.h"
@@ -214,7 +213,6 @@ DECLARE_CALLBACK(gost, gost_hash, 32);
 DECLARE_CALLBACK(groestl, groestl_hash, 32);
 DECLARE_CALLBACK(groestlmyriad, groestlmyriad_hash, 32);
 DECLARE_CALLBACK(hefty1, hefty1_hash, 32);
-DECLARE_CALLBACK(hsr, hsr_hash, 32);
 DECLARE_CALLBACK(keccak, keccak_hash, 32);
 DECLARE_CALLBACK(lbry, lbry_hash, 32);
 DECLARE_CALLBACK(lyra2z16m330, lyra2z16m330_hash, 32);
@@ -590,7 +588,6 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "groestl", groestl);
     NODE_SET_METHOD(exports, "groestlmyriad", groestlmyriad);
     NODE_SET_METHOD(exports, "hefty1", hefty1);
-    NODE_SET_METHOD(exports, "hsr", hsr);
     NODE_SET_METHOD(exports, "keccak", keccak);
     NODE_SET_METHOD(exports, "lbry", lbry);
     NODE_SET_METHOD(exports, "lyra2re2", lyra2re2);
