@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include "crypto/oaes_lib.h"
 #include "crypto/c_keccak.h"
 #include "crypto/c_groestl.h"
@@ -15,6 +14,12 @@
 #include "crypto/int-util.h"
 #include "crypto/hash-ops.h"
 #include "crypto/variant2_int_sqrt.h"
+
+#ifdef WIN32
+#include <process.h>
+#else
+#include <unistd.h>
+#endif
 
 #define hash_extra_blake(data, length, hash) blake256_hash((uint8_t*)(hash), (uint8_t*)(data), (length))
 #include "crypto/variant4_random_math.h"

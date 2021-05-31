@@ -5,7 +5,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include "crypto/oaes_lib.h"
 #include "crypto/c_keccak.h"
 #include "crypto/c_groestl.h"
@@ -14,6 +13,12 @@
 #include "crypto/c_skein.h"
 #include "crypto/int-util.h"
 #include "crypto/hash-ops.h"
+
+#ifdef WIN32
+#include <process.h>
+#else
+#include <unistd.h>
+#endif
 
 #define MEMORY         (1 << 21) /* 2 MiB */
 #define ITER           (1 << 19)
