@@ -4,7 +4,6 @@
 #include <stdint.h>
 
 extern "C" {
-    #include "algorithms/allium.h"
     #include "algorithms/bcrypt.h"
     #include "algorithms/blake.h"
     #include "algorithms/blake2s.h"
@@ -16,13 +15,6 @@ extern "C" {
     #include "algorithms/hefty1.h"
     #include "algorithms/keccak.h"
     #include "algorithms/lbry.h"
-    #include "algorithms/lyra2.h"
-    #include "algorithms/lyra2RE.h"
-    #include "algorithms/lyra2REV2.h"
-    #include "algorithms/lyra2REV3.h"
-    #include "algorithms/lyra2Z.h"
-    #include "algorithms/lyra2z16m330.h"
-    #include "algorithms/lyra2z330.h"
     #include "algorithms/minotaur.h"
     #include "algorithms/nist5.h"
     #include "algorithms/phi1612.h"
@@ -201,8 +193,6 @@ DECLARE_CALLBACK(groestlmyriad, groestlmyriad_hash, 32);
 DECLARE_CALLBACK(hefty1, hefty1_hash, 32);
 DECLARE_CALLBACK(keccak, keccak_hash, 32);
 DECLARE_CALLBACK(lbry, lbry_hash, 32);
-DECLARE_CALLBACK(lyra2z16m330, lyra2z16m330_hash, 32);
-DECLARE_CALLBACK(lyra2z330, lyra2z330_hash, 32);
 DECLARE_CALLBACK(minotaur, minotaur_hash, 32);
 DECLARE_CALLBACK(nist5, nist5_hash, 32);
 DECLARE_CALLBACK(quark, quark_hash, 32);
@@ -216,12 +206,7 @@ DECLARE_CALLBACK(x15, x15_hash, 32);
 DECLARE_CALLBACK(x16r, x16r_hash, 32);
 DECLARE_CALLBACK(x16rv2, x16rv2_hash, 32);
 
-DECLARE_NO_INPUT_LENGTH_CALLBACK(allium, allium_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(bcrypt, bcrypt_hash, 32);
-DECLARE_NO_INPUT_LENGTH_CALLBACK(lyra2re2, lyra2re2_hash, 32);
-DECLARE_NO_INPUT_LENGTH_CALLBACK(lyra2rev2, lyra2rev2_hash, 32);
-DECLARE_NO_INPUT_LENGTH_CALLBACK(lyra2rev3, lyra2rev3_hash, 32);
-DECLARE_NO_INPUT_LENGTH_CALLBACK(lyra2z, lyra2z_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(phi1612, phi1612_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(tribus, tribus_hash, 32);
 
@@ -294,7 +279,6 @@ DECLARE_FUNC(scryptn) {
 }
 
 DECLARE_INIT(init) {
-    NODE_SET_METHOD(exports, "allium", allium);
     NODE_SET_METHOD(exports, "bcrypt", bcrypt);
     NODE_SET_METHOD(exports, "blake", blake);
     NODE_SET_METHOD(exports, "blake2s", blake2s);
@@ -307,12 +291,6 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "hefty1", hefty1);
     NODE_SET_METHOD(exports, "keccak", keccak);
     NODE_SET_METHOD(exports, "lbry", lbry);
-    NODE_SET_METHOD(exports, "lyra2re2", lyra2re2);
-    NODE_SET_METHOD(exports, "lyra2rev2", lyra2rev2);
-    NODE_SET_METHOD(exports, "lyra2rev3", lyra2rev3);
-    NODE_SET_METHOD(exports, "lyra2z", lyra2z);
-    NODE_SET_METHOD(exports, "lyra2z16m330", lyra2z16m330);
-    NODE_SET_METHOD(exports, "lyra2z330", lyra2z330);
     NODE_SET_METHOD(exports, "minotaur", minotaur);
     NODE_SET_METHOD(exports, "nist5", nist5);
     NODE_SET_METHOD(exports, "phi1612", phi1612);
