@@ -27,13 +27,13 @@
  * online backup system.
  */
 
-#include "Lyra2Z.h"
+#include "lyra2Z.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
 #include "sha3/sph_blake.h"
-#include "Lyra2.h"
+#include "lyra2.h"
 
 void lyra2z_hash(const char* input, char* output)
 {

@@ -22,7 +22,7 @@
 #include <string.h>
 #include <time.h>
 
-#include "Lyra2.h"
+#include "lyra2.h"
 #include "sponge.h"
 
 /**

@@ -1,4 +1,4 @@
-#include "Lyra2.h"
+#include "lyra2.h"
 
 #include "blake2s.h"
 #include <stdlib.h>

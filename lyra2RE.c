@@ -27,7 +27,7 @@
  * online backup system.
  */
 
-#include "Lyra2RE.h"
+#include "lyra2RE.h"
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
@@ -38,7 +38,7 @@
 #include "sha3/sph_bmw.h"
 #include "sha3/sph_keccak.h"
 #include "sha3/sph_skein.h"
-#include "Lyra2.h"
+#include "lyra2.h"
 
 void lyra2re_hash(const char* input, char* output)
 {

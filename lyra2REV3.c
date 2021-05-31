@@ -1,4 +1,4 @@
-#include "Lyra2RE.h"
+#include "lyra2RE.h"
 
 void lyra2rev3_hash(const char* input, char* output)
 {
