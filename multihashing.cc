@@ -25,8 +25,6 @@ extern "C" {
     #include "Lyra2Z.h"
     #include "lyra2z16m330.h"
     #include "lyra2z330.h"
-    #include "m7.h"
-    #include "magimath.h"
     #include "minotaur.h"
     #include "neoscrypt.h"
     #include "nist5.h"
@@ -239,8 +237,6 @@ DECLARE_NO_INPUT_LENGTH_CALLBACK(lyra2re2, lyra2re2_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(lyra2rev2, lyra2rev2_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(lyra2rev3, lyra2rev3_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(lyra2z, lyra2z_hash, 32);
-DECLARE_NO_INPUT_LENGTH_CALLBACK(m7, m7_hash, 32);
-DECLARE_NO_INPUT_LENGTH_CALLBACK(m7m, m7m_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(phi1612, phi1612_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(tribus, tribus_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(yescrypt, yescrypt_hash, 32);
@@ -596,8 +592,6 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "lyra2z", lyra2z);
     NODE_SET_METHOD(exports, "lyra2z16m330", lyra2z16m330);
     NODE_SET_METHOD(exports, "lyra2z330", lyra2z330);
-    NODE_SET_METHOD(exports, "m7", m7);
-    NODE_SET_METHOD(exports, "m7m", m7m);
     NODE_SET_METHOD(exports, "minotaur", minotaur);
     NODE_SET_METHOD(exports, "neoscrypt", neoscrypt);
     NODE_SET_METHOD(exports, "nist5", nist5);
