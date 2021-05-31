@@ -32,18 +32,15 @@ extern "C" {
     #include "quark.h"
     #include "qubit.h"
     #include "scryptn.h"
-    #include "sha1.h"
     #include "sha256d.h"
     #include "shavite3.h"
     #include "skein.h"
-    #include "skunk.h"
     #include "tribus.h"
     #include "x11.h"
     #include "x13.h"
     #include "x15.h"
     #include "x16r.h"
     #include "x17.h"
-    #include "xevan.h"
     #include "yescrypt/yescrypt.h"
     #include "yescrypt/sha256_Y.h"
 }
@@ -219,7 +216,6 @@ DECLARE_CALLBACK(minotaur, minotaur_hash, 32);
 DECLARE_CALLBACK(nist5, nist5_hash, 32);
 DECLARE_CALLBACK(quark, quark_hash, 32);
 DECLARE_CALLBACK(qubit, qubit_hash, 32);
-DECLARE_CALLBACK(sha1, sha1_hash, 32);
 DECLARE_CALLBACK(sha256d, sha256d_hash, 32);
 DECLARE_CALLBACK(shavite3, shavite3_hash, 32);
 DECLARE_CALLBACK(skein, skein_hash, 32);
@@ -229,7 +225,6 @@ DECLARE_CALLBACK(x15, x15_hash, 32);
 DECLARE_CALLBACK(x16r, x16r_hash, 32);
 DECLARE_CALLBACK(x16rv2, x16rv2_hash, 32);
 DECLARE_CALLBACK(x17, x17_hash, 32);
-DECLARE_CALLBACK(xevan, xevan_hash, 32);
 
 DECLARE_NO_INPUT_LENGTH_CALLBACK(allium, allium_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(bcrypt, bcrypt_hash, 32);
@@ -512,30 +507,6 @@ DECLARE_FUNC(boolberry) {
     SET_BUFFER_RETURN(output, 32);
 }
 
-DECLARE_FUNC(skunk) {
-    DECLARE_SCOPE;
-
-    if (args.Length() < 1)
-        RETURN_EXCEPT("You must provide one argument.");
-
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Object> localTarget;
-        Local<Context> context = isolate->GetCurrentContext();
-        MaybeLocal<Object> target = args[0]->ToObject(context);
-        target.ToLocal(&localTarget);
-    #else
-        Local<Object> localTarget = args[0]->ToObject();
-    #endif
-
-    if(!Buffer::HasInstance(localTarget))
-        RETURN_EXCEPT("Argument should be a buffer object.");
-
-    char output[32];
-    char * input = Buffer::Data(localTarget);
-    skunk_hash(input, output, 0);
-    SET_BUFFER_RETURN(output, 32);
-}
-
 DECLARE_FUNC(odo) {
     DECLARE_SCOPE;
 
@@ -601,11 +572,9 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "qubit", qubit);
     NODE_SET_METHOD(exports, "scrypt", scrypt);
     NODE_SET_METHOD(exports, "scryptn", scryptn);
-    NODE_SET_METHOD(exports, "sha1", sha1);
     NODE_SET_METHOD(exports, "sha256d", sha256d);
     NODE_SET_METHOD(exports, "shavite3", shavite3);
     NODE_SET_METHOD(exports, "skein", skein);
-    NODE_SET_METHOD(exports, "skunk", skunk);
     NODE_SET_METHOD(exports, "tribus", tribus);
     NODE_SET_METHOD(exports, "x11", x11);
     NODE_SET_METHOD(exports, "x13", x13);
@@ -613,7 +582,6 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "x16r", x16r);
     NODE_SET_METHOD(exports, "x16rv2", x16rv2);
     NODE_SET_METHOD(exports, "x17", x17);
-    NODE_SET_METHOD(exports, "xevan", xevan);
     NODE_SET_METHOD(exports, "yescrypt", yescrypt);
 }
 

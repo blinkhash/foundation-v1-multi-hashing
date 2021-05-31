@@ -25,7 +25,6 @@
         "keccak",
         "blake",
         "shavite",
-        "fugue",
-        "sha1"
+        "fugue"
     ]
 }
