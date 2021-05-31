@@ -24,7 +24,6 @@ extern "C" {
     #include "algorithms/lyra2z16m330.h"
     #include "algorithms/lyra2z330.h"
     #include "algorithms/minotaur.h"
-    #include "algorithms/neoscrypt.h"
     #include "algorithms/nist5.h"
     #include "algorithms/phi1612.h"
     #include "algorithms/quark.h"
@@ -38,7 +37,6 @@ extern "C" {
     #include "algorithms/x13.h"
     #include "algorithms/x15.h"
     #include "algorithms/x16r.h"
-    #include "algorithms/x17.h"
 }
 
 using namespace node;
@@ -217,7 +215,6 @@ DECLARE_CALLBACK(x13, x13_hash, 32);
 DECLARE_CALLBACK(x15, x15_hash, 32);
 DECLARE_CALLBACK(x16r, x16r_hash, 32);
 DECLARE_CALLBACK(x16rv2, x16rv2_hash, 32);
-DECLARE_CALLBACK(x17, x17_hash, 32);
 
 DECLARE_NO_INPUT_LENGTH_CALLBACK(allium, allium_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(bcrypt, bcrypt_hash, 32);
@@ -259,30 +256,6 @@ DECLARE_FUNC(scrypt) {
 
     uint32_t input_len = Buffer::Length(localTarget);
     scrypt_N_R_1_256(input, output, nValue, rValue, input_len);
-    SET_BUFFER_RETURN(output, 32);
-}
-
-DECLARE_FUNC(neoscrypt) {
-    DECLARE_SCOPE;
-
-    if (args.Length() < 2)
-        RETURN_EXCEPT("You must provide two arguments.");
-
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Object> localTarget;
-        Local<Context> context = isolate->GetCurrentContext();
-        MaybeLocal<Object> target = args[0]->ToObject(context);
-        target.ToLocal(&localTarget);
-    #else
-        Local<Object> localTarget = args[0]->ToObject();
-    #endif
-
-    if(!Buffer::HasInstance(localTarget))
-        RETURN_EXCEPT("Argument should be a buffer object.");
-
-    char output[32];
-    char * input = Buffer::Data(localTarget);
-    neoscrypt(input, output, 0);
     SET_BUFFER_RETURN(output, 32);
 }
 
@@ -341,7 +314,6 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "lyra2z16m330", lyra2z16m330);
     NODE_SET_METHOD(exports, "lyra2z330", lyra2z330);
     NODE_SET_METHOD(exports, "minotaur", minotaur);
-    NODE_SET_METHOD(exports, "neoscrypt", neoscrypt);
     NODE_SET_METHOD(exports, "nist5", nist5);
     NODE_SET_METHOD(exports, "phi1612", phi1612);
     NODE_SET_METHOD(exports, "quark", quark);
@@ -357,7 +329,6 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "x15", x15);
     NODE_SET_METHOD(exports, "x16r", x16r);
     NODE_SET_METHOD(exports, "x16rv2", x16rv2);
-    NODE_SET_METHOD(exports, "x17", x17);
 }
 
 NODE_MODULE(multihashing, init)
