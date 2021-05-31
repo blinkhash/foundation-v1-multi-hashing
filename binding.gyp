@@ -9,8 +9,6 @@
                 "blake.c",
                 "blake2s.c",
                 "c11.c",
-                "cryptonight.c",
-                "cryptonight_fast.c",
                 "fresh.c",
                 "fugue.c",
                 "gost.c",
@@ -78,16 +76,7 @@
                 "sph/sph_skein.h",
                 "yescrypt/sha256_Y.c",
                 "yescrypt/yescrypt-best.c",
-                "yescrypt/yescryptcommon.c",
-                "crypto/aesb.c",
-                "crypto/c_blake256.c",
-                "crypto/c_groestl.c",
-                "crypto/c_jh.c",
-                "crypto/c_keccak.c",
-                "crypto/c_skein.c",
-                "crypto/hash.c",
-                "crypto/oaes_lib.c",
-                "crypto/wild_keccak.cpp"
+                "yescrypt/yescryptcommon.c"
             ],
             'conditions': [
                 ['OS=="linux"',

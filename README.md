@@ -30,7 +30,6 @@ Algorithms
 * qubit
 * hefty1
 * shavite3
-* cryptonight
 * sha256d
 * lbry
 

@@ -9,8 +9,6 @@ extern "C" {
     #include "blake.h"
     #include "blake2s.h"
     #include "c11.h"
-    #include "cryptonight.h"
-    #include "cryptonight_fast.h"
     #include "fresh.h"
     #include "fugue.h"
     #include "gost.h"
@@ -325,142 +323,12 @@ DECLARE_FUNC(scryptn) {
     SET_BUFFER_RETURN(output, 32);
 }
 
-DECLARE_FUNC(cryptonight) {
-    DECLARE_SCOPE;
-
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Context> currentContext = isolate->GetCurrentContext();
-    #endif
-
-    bool fast = false;
-    uint32_t cn_variant = 0;
-    uint64_t height = 0;
-
-    if (args.Length() < 1)
-        RETURN_EXCEPT("You must provide one argument.");
-
-    if (args.Length() >= 2) {
-        if(args[1]->IsBoolean())
-            #if NODE_MAJOR_VERSION >= 12
-                fast = args[1]->BooleanValue(isolate);
-            #else
-                fast = args[1]->BooleanValue();
-            #endif
-        else if(args[1]->IsUint32())
-            #if NODE_MAJOR_VERSION >= 12
-                cn_variant = args[1]->Uint32Value(currentContext).FromJust();
-            #else
-                cn_variant = args[1]->Uint32Value();
-            #endif
-        else
-            RETURN_EXCEPT("Argument 2 should be a boolean or uint32_t");
-    }
-
-    if ((cn_variant == 4) && (args.Length() < 3)) {
-        RETURN_EXCEPT("You must provide Argument 3 (block height) for Cryptonight variant 4");
-    }
-
-    if (args.Length() >= 3) {
-        if(args[2]->IsUint32())
-            #if NODE_MAJOR_VERSION >= 12
-                height = args[2]->Uint32Value(currentContext).FromJust();
-            #else
-                height = args[2]->Uint32Value();
-            #endif
-        else
-            RETURN_EXCEPT("Argument 3 should be uint32_t");
-    }
-
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Object> localTarget;
-        Local<Context> context = isolate->GetCurrentContext();
-        MaybeLocal<Object> target = args[0]->ToObject(context);
-        target.ToLocal(&localTarget);
-    #else
-        Local<Object> localTarget = args[0]->ToObject();
-    #endif
-
-    if(!Buffer::HasInstance(localTarget))
-        RETURN_EXCEPT("Argument should be a buffer object.");
-
-    char output[32];
-    char * input = Buffer::Data(localTarget);
-    uint32_t input_len = Buffer::Length(localTarget);
-
-    if(fast)
-        cryptonight_fast_hash(input, output, input_len);
-    else {
-        if ((cn_variant == 1) && input_len < 43)
-            RETURN_EXCEPT("Argument must be 43 bytes for monero variant 1");
-        cryptonight_hash(input, output, input_len, cn_variant, height);
-    }
-    SET_BUFFER_RETURN(output, 32);
-}
-
-DECLARE_FUNC(cryptonightfast) {
-    DECLARE_SCOPE;
-
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Context> currentContext = isolate->GetCurrentContext();
-    #endif
-
-    bool fast = false;
-    uint32_t cn_variant = 0;
-
-    if (args.Length() < 1)
-        RETURN_EXCEPT("You must provide one argument.");
-
-    if (args.Length() >= 2) {
-        if(args[1]->IsBoolean())
-            #if NODE_MAJOR_VERSION >= 12
-                fast = args[1]->BooleanValue(isolate);
-            #else
-                fast = args[1]->BooleanValue();
-            #endif
-        else if(args[1]->IsUint32())
-            #if NODE_MAJOR_VERSION >= 12
-                cn_variant = args[1]->Uint32Value(currentContext).FromJust();
-            #else
-                cn_variant = args[1]->Uint32Value();
-            #endif
-        else
-            RETURN_EXCEPT("Argument 2 should be a boolean or uint32_t");
-    }
-
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Object> localTarget;
-        Local<Context> context = isolate->GetCurrentContext();
-        MaybeLocal<Object> target = args[0]->ToObject(context);
-        target.ToLocal(&localTarget);
-    #else
-        Local<Object> localTarget = args[0]->ToObject();
-    #endif
-
-    if(!Buffer::HasInstance(localTarget))
-        RETURN_EXCEPT("Argument should be a buffer object.");
-
-    char output[32];
-    char * input = Buffer::Data(localTarget);
-    uint32_t input_len = Buffer::Length(localTarget);
-
-    if(fast)
-        cryptonightfast_fast_hash(input, output, input_len);
-    else {
-        if (cn_variant > 0 && input_len < 43)
-            RETURN_EXCEPT("Argument must be 43 bytes for monero variant 1+");
-        cryptonightfast_hash(input, output, input_len, cn_variant);
-    }
-    SET_BUFFER_RETURN(output, 32);
-}
-
 DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "allium", allium);
     NODE_SET_METHOD(exports, "bcrypt", bcrypt);
     NODE_SET_METHOD(exports, "blake", blake);
     NODE_SET_METHOD(exports, "blake2s", blake2s);
     NODE_SET_METHOD(exports, "c11", c11);
-    NODE_SET_METHOD(exports, "cryptonight", cryptonight);
-    NODE_SET_METHOD(exports, "cryptonightfast", cryptonightfast);
     NODE_SET_METHOD(exports, "fresh", fresh);
     NODE_SET_METHOD(exports, "fugue", fugue);
     NODE_SET_METHOD(exports, "gost", gost);
