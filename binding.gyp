@@ -8,7 +8,6 @@
                 "bcrypt.c",
                 "blake.c",
                 "blake2s.c",
-                "boolberry.cc",
                 "c11.c",
                 "cryptonight.c",
                 "cryptonight_fast.c",
@@ -29,7 +28,6 @@
                 "minotaur.c",
                 "neoscrypt.c",
                 "nist5.c",
-                "odo.cc",
                 "phi1612.c",
                 "quark.c",
                 "qubit.c",
@@ -89,7 +87,6 @@
                 "crypto/c_skein.c",
                 "crypto/hash.c",
                 "crypto/oaes_lib.c",
-                "crypto/odocrypt.cpp",
                 "crypto/wild_keccak.cpp"
             ],
             'conditions': [

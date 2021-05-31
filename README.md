@@ -31,7 +31,6 @@ Algorithms
 * hefty1
 * shavite3
 * cryptonight
-* boolberry
 * sha256d
 * lbry
 

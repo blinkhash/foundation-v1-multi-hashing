@@ -45,9 +45,6 @@ extern "C" {
     #include "yescrypt/sha256_Y.h"
 }
 
-#include "boolberry.h"
-#include "odo.h"
-
 using namespace node;
 using namespace v8;
 
@@ -456,96 +453,11 @@ DECLARE_FUNC(cryptonightfast) {
     SET_BUFFER_RETURN(output, 32);
 }
 
-DECLARE_FUNC(boolberry) {
-    DECLARE_SCOPE;
-
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Context> currentContext = isolate->GetCurrentContext();
-    #endif
-
-    if (args.Length() < 2)
-        RETURN_EXCEPT("You must provide two arguments.");
-
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Object> localTarget;
-        Local<Object> localTarget_spad;
-        Local<Context> context = isolate->GetCurrentContext();
-        MaybeLocal<Object> target = args[0]->ToObject(context);
-        MaybeLocal<Object> target_spad = args[1]->ToObject(context);
-        target.ToLocal(&localTarget);
-        target_spad.ToLocal(&localTarget_spad);
-    #else
-        Local<Object> localTarget = args[0]->ToObject();
-        Local<Object> localTarget_spad = args[1]->ToObject();
-    #endif
-
-    if(!Buffer::HasInstance(localTarget))
-        RETURN_EXCEPT("Argument 1 should be a buffer object.");
-
-    if(!Buffer::HasInstance(localTarget_spad))
-        RETURN_EXCEPT("Argument 2 should be a buffer object.");
-
-    uint32_t height = 1;
-    if(args.Length() >= 3) {
-        if(args[2]->IsUint32())
-            #if NODE_MAJOR_VERSION >= 12
-                height = args[2]->Uint32Value(currentContext).FromJust();
-            #else
-                height = args[2]->Uint32Value();
-            #endif
-        else
-            RETURN_EXCEPT("Argument 3 should be an unsigned integer.");
-    }
-
-    char output[32];
-    char * input = Buffer::Data(localTarget);
-    char * scratchpad = Buffer::Data(localTarget_spad);
-
-    uint32_t input_len = Buffer::Length(localTarget);
-    uint64_t spad_len = Buffer::Length(localTarget_spad);
-    boolberry_hash(input, input_len, scratchpad, spad_len, output, height);
-    SET_BUFFER_RETURN(output, 32);
-}
-
-DECLARE_FUNC(odo) {
-    DECLARE_SCOPE;
-
-    if (args.Length() < 2)
-        RETURN_EXCEPT("You must provide buffer to hash and key value");
-
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Object> localTarget;
-        Local<Context> context = isolate->GetCurrentContext();
-        MaybeLocal<Object> target = args[0]->ToObject(context);
-        target.ToLocal(&localTarget);
-    #else
-        Local<Object> localTarget = args[0]->ToObject();
-    #endif
-
-    if(!Buffer::HasInstance(localTarget))
-        RETURN_EXCEPT("Argument should be a buffer object.");
-
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Context> currentContext = isolate->GetCurrentContext();
-        unsigned int keyValue = args[1]->Uint32Value(currentContext).FromJust();
-    #else
-        unsigned int keyValue = args[1]->Uint32Value();
-    #endif
-
-    char output[32];
-    char * input = Buffer::Data(localTarget);
-    uint32_t input_len = Buffer::Length(localTarget);
-
-    odo_hash(input, output, input_len, keyValue);
-    SET_BUFFER_RETURN(output, 32);
-}
-
 DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "allium", allium);
     NODE_SET_METHOD(exports, "bcrypt", bcrypt);
     NODE_SET_METHOD(exports, "blake", blake);
     NODE_SET_METHOD(exports, "blake2s", blake2s);
-    NODE_SET_METHOD(exports, "boolberry", boolberry);
     NODE_SET_METHOD(exports, "c11", c11);
     NODE_SET_METHOD(exports, "cryptonight", cryptonight);
     NODE_SET_METHOD(exports, "cryptonightfast", cryptonightfast);
@@ -566,7 +478,6 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "minotaur", minotaur);
     NODE_SET_METHOD(exports, "neoscrypt", neoscrypt);
     NODE_SET_METHOD(exports, "nist5", nist5);
-    NODE_SET_METHOD(exports, "odo", odo);
     NODE_SET_METHOD(exports, "phi1612", phi1612);
     NODE_SET_METHOD(exports, "quark", quark);
     NODE_SET_METHOD(exports, "qubit", qubit);
