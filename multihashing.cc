@@ -39,8 +39,6 @@ extern "C" {
     #include "x15.h"
     #include "x16r.h"
     #include "x17.h"
-    #include "yescrypt/yescrypt.h"
-    #include "yescrypt/sha256_Y.h"
 }
 
 using namespace node;
@@ -229,7 +227,6 @@ DECLARE_NO_INPUT_LENGTH_CALLBACK(lyra2rev3, lyra2rev3_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(lyra2z, lyra2z_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(phi1612, phi1612_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(tribus, tribus_hash, 32);
-DECLARE_NO_INPUT_LENGTH_CALLBACK(yescrypt, yescrypt_hash, 32);
 
 DECLARE_FUNC(scrypt) {
     DECLARE_SCOPE;
@@ -361,7 +358,6 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "x16r", x16r);
     NODE_SET_METHOD(exports, "x16rv2", x16rv2);
     NODE_SET_METHOD(exports, "x17", x17);
-    NODE_SET_METHOD(exports, "yescrypt", yescrypt);
 }
 
 NODE_MODULE(multihashing, init)

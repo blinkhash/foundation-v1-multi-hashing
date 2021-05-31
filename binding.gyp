@@ -42,7 +42,6 @@
                 "x15.c",
                 "x16r.c",
                 "x17.c",
-                "zr5.c",
                 "sha3/aes_helper.c",
                 "sha3/hamsi.c",
                 "sha3/KeccakP-800-reference.c",
@@ -73,10 +72,7 @@
                 "sph/sph_fungue.h",
                 "sph/sph_gost.h",
                 "sph/sph_jh.h",
-                "sph/sph_skein.h",
-                "yescrypt/sha256_Y.c",
-                "yescrypt/yescrypt-best.c",
-                "yescrypt/yescryptcommon.c"
+                "sph/sph_skein.h"
             ],
             'conditions': [
                 ['OS=="linux"',
