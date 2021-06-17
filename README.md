@@ -1,6 +1,6 @@
 # Blinkhash Multi-Hashing
 
-[![Build Status](https://travis-ci.com/blinkhash/blinkhash-utxo-lib.svg?branch=master)](https://travis-ci.com/blinkhash/blinkhash-utxo-lib)
+[![Blinkhash CI](https://github.com/blinkhash/blinkhash-multi-hashing/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/blinkhash/blinkhash-multi-hashing/actions/workflows/build.yml)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
 [![Downloads](https://img.shields.io/npm/dm/blinkhash-multi-hashing.svg)](https://www.npmjs.com/package/blinkhash-multi-hashing)
 [![Version](https://img.shields.io/npm/v/blinkhash-multi-hashing.svg)](https://www.npmjs.com/package/blinkhash-multi-hashing)
