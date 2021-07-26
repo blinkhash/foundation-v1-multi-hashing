@@ -1,13 +1,13 @@
-# Blinkhash Multi-Hashing
+# Foundation Multi-Hashing
 
-[![Blinkhash CI](https://github.com/blinkhash/blinkhash-multi-hashing/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/blinkhash/blinkhash-multi-hashing/actions/workflows/build.yml)
+[![Foundation CI](https://github.com/blinkhash/foundation-multi-hashing/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/blinkhash/foundation-multi-hashing/actions/workflows/build.yml)
 [![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
-[![Downloads](https://img.shields.io/npm/dm/blinkhash-multi-hashing.svg)](https://www.npmjs.com/package/blinkhash-multi-hashing)
-[![Version](https://img.shields.io/npm/v/blinkhash-multi-hashing.svg)](https://www.npmjs.com/package/blinkhash-multi-hashing)
-[![Known Vulnerabilities](https://snyk.io/test/npm/blinkhash-multi-hashing/badge.svg)](https://snyk.io/test/npm/blinkhash-multi-hashing)
+[![Downloads](https://img.shields.io/npm/dm/foundation-multi-hashing.svg)](https://www.npmjs.com/package/foundation-multi-hashing)
+[![Version](https://img.shields.io/npm/v/foundation-multi-hashing.svg)](https://www.npmjs.com/package/foundation-multi-hashing)
+[![Known Vulnerabilities](https://snyk.io/test/npm/foundation-multi-hashing/badge.svg)](https://snyk.io/test/npm/foundation-multi-hashing)
 [![Discord](https://img.shields.io/discord/738590795384356904)](https://discord.gg/8xtHZFKJQY)
 
-This repository is a collection of hashing algorithms that are currently supported by Blinkhash. Each of these algorithms are leveraged by [blinkhash-stratum](https://github.com/blinkhash/blinkhash-stratum), which handles the majority of the mining process. To request for an unsupported algorithm to be added, open an issue or pull request and it will be addressed.  
+This repository is a collection of hashing algorithms that are currently supported by Foundation. Each of these algorithms are leveraged by [foundation-stratum](https://github.com/blinkhash/foundation-stratum), which handles the majority of the mining process. To request for an unsupported algorithm to be added, open an issue or pull request and it will be addressed.  
 
 #### Need Support?
 
