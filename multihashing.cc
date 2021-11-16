@@ -11,6 +11,7 @@ extern "C" {
     #include "algorithms/fresh.h"
     #include "algorithms/fugue.h"
     #include "algorithms/gost.h"
+    #include "algorithms/gr.h"
     #include "algorithms/groestl.h"
     #include "algorithms/hefty1.h"
     #include "algorithms/keccak.h"
