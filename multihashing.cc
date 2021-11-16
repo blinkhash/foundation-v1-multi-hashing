@@ -11,6 +11,7 @@ extern "C" {
     #include "algorithms/fresh.h"
     #include "algorithms/fugue.h"
     #include "algorithms/gost.h"
+    #include "algorithms/gr.h"
     #include "algorithms/groestl.h"
     #include "algorithms/hefty1.h"
     #include "algorithms/keccak.h"
@@ -188,6 +189,7 @@ DECLARE_CALLBACK(c11, c11_hash, 32);
 DECLARE_CALLBACK(fresh, fresh_hash, 32);
 DECLARE_CALLBACK(fugue, fugue_hash, 32);
 DECLARE_CALLBACK(gost, gost_hash, 32);
+DECLARE_CALLBACK(gr, gr_hash, 32);
 DECLARE_CALLBACK(groestl, groestl_hash, 32);
 DECLARE_CALLBACK(groestlmyriad, groestlmyriad_hash, 32);
 DECLARE_CALLBACK(hefty1, hefty1_hash, 32);
@@ -286,6 +288,7 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "fresh", fresh);
     NODE_SET_METHOD(exports, "fugue", fugue);
     NODE_SET_METHOD(exports, "gost", gost);
+    NODE_SET_METHOD(exports, "gr", gr);
     NODE_SET_METHOD(exports, "groestl", groestl);
     NODE_SET_METHOD(exports, "groestlmyriad", groestlmyriad);
     NODE_SET_METHOD(exports, "hefty1", hefty1);
