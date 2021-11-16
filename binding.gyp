@@ -57,8 +57,6 @@
                 "algorithms/sha3/sph_sha2.c",
                 "algorithms/sha3/sph_sha2big.c",
                 "algorithms/sha3/sph_tiger.c",
-                "algorithms/sph/sph_fungue.h",
-                'algorithms/sph/extra.c',
                 'algorithms/cryptonote/cryptonight_dark_lite.c',
                 'algorithms/cryptonote/cryptonight_dark.c',
                 'algorithms/cryptonote/cryptonight_fast.c',
