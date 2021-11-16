@@ -6,15 +6,15 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "crypto/oaes_lib.h"
-#include "crypto/c_keccak.h"
-#include "crypto/c_groestl.h"
-#include "crypto/c_blake256.h"
-#include "crypto/c_jh.h"
-#include "crypto/c_skein.h"
-#include "crypto/int-util.h"
-#include "crypto/hash-ops.h"
-#include "crypto/variant2_int_sqrt.h"
+#include "../crypto/oaes_lib.h"
+#include "../crypto/c_keccak.h"
+#include "../crypto/c_groestl.h"
+#include "../crypto/c_blake256.h"
+#include "../crypto/c_jh.h"
+#include "../crypto/c_skein.h"
+#include "../crypto/int-util.h"
+#include "../crypto/hash-ops.h"
+#include "../crypto/variant2_int_sqrt.h"
 
 #if defined(_MSC_VER)
 #include <malloc.h>
