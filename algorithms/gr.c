@@ -54,19 +54,11 @@ enum Algo {
 
 enum CNAlgo {
 	CNDark = 0,
-	CNDarkf,
 	CNDarklite,
-	CNDarklitef,
 	CNFast,
-	CNFastf,
-	CNF,
 	CNLite,
-	CNLitef,
-	CNSoftshellf,
 	CNTurtle,
-	CNTurtlef,
 	CNTurtlelite,
-	CNTurtlelitef,
 	CN_HASH_FUNC_COUNT
 };
 
@@ -133,7 +125,7 @@ void SwapBytes(void *pv, unsigned int n)
     }
 }
 
-void gr_hash(const char* input, char* output) {
+void gr_hash(const char* input, char* output, uint32_t len) {
 	uint32_t hash[64/4];
 	sph_blake512_context ctx_blake;
 	sph_bmw512_context ctx_bmw;
@@ -160,7 +152,7 @@ void gr_hash(const char* input, char* output) {
 	uint8_t selectedAlgoOutput[15] = {0};
 	uint8_t selectedCNAlgoOutput[14] = {0};
 	getAlgoString(&input[4], 64, selectedAlgoOutput, 15);
-	getAlgoString(&input[4], 64, selectedCNAlgoOutput, 14);
+	getAlgoString(&input[4], 64, selectedCNAlgoOutput, 6);
 	//printf("previous hash=");
 	//print_hex_memory(&input[4], 64);
 	int i;
@@ -205,44 +197,20 @@ void gr_hash(const char* input, char* output) {
 		 case CNDark:
 			cryptonightdark_hash(in, hash, size, 1);
 			break;
-		 case CNDarkf:
-			cryptonightdark_fast_hash(in, hash, size);
-			break;
 		 case CNDarklite:
 			cryptonightdarklite_hash(in, hash, size, 1);
-			break;
-		 case CNDarklitef:
-			cryptonightdarklite_fast_hash(in, hash, size);
 			break;
 		 case CNFast:
 			cryptonightfast_hash(in, hash, size, 1);
 			break;
-		 case CNFastf:
-			cryptonightfast_fast_hash(in, hash, size);
-			break;
-		 case CNF:
-			cryptonight_fast_hash(in, hash, size);
-			break;
 		 case CNLite:
 			cryptonightlite_hash(in, hash, size, 1);
-			break;
-		 case CNLitef:
-			cryptonightlite_fast_hash(in, hash, size);
-			break;
-		 case CNSoftshellf:
-			cryptonight_soft_shell_fast_hash(in, hash, size);
 			break;
 		 case CNTurtle:
 			cryptonightturtle_hash(in, hash, size, 1);
 			break;
-		 case CNTurtlef:
-			cryptonightturtle_fast_hash(in, hash, size);
-			break;
 		 case CNTurtlelite:
 			cryptonightturtlelite_hash(in, hash, size, 1);
-			break;
-		 case CNTurtlelitef:;
-			cryptonightturtlelite_fast_hash(in, hash, size);
 			break;
 		}
 		//selection core algo
