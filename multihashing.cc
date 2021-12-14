@@ -26,6 +26,7 @@ extern "C" {
     #include "algorithms/shavite3.h"
     #include "algorithms/skein.h"
     #include "algorithms/tribus.h"
+    #include "algorithms/verthash.h"
     #include "algorithms/x11.h"
     #include "algorithms/x13.h"
     #include "algorithms/x15.h"
@@ -202,6 +203,7 @@ DECLARE_CALLBACK(qubit, qubit_hash, 32);
 DECLARE_CALLBACK(sha256d, sha256d_hash, 32);
 DECLARE_CALLBACK(shavite3, shavite3_hash, 32);
 DECLARE_CALLBACK(skein, skein_hash, 32);
+DECLARE_CALLBACK(verthash, verthash, 32);
 DECLARE_CALLBACK(x11, x11_hash, 32);
 DECLARE_CALLBACK(x13, x13_hash, 32);
 DECLARE_CALLBACK(x15, x15_hash, 32);
@@ -305,6 +307,7 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "shavite3", shavite3);
     NODE_SET_METHOD(exports, "skein", skein);
     NODE_SET_METHOD(exports, "tribus", tribus);
+    NODE_SET_METHOD(exports, "verthash", verthash);
     NODE_SET_METHOD(exports, "x11", x11);
     NODE_SET_METHOD(exports, "x13", x13);
     NODE_SET_METHOD(exports, "x15", x15);
