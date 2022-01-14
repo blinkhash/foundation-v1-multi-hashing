@@ -31,6 +31,11 @@ extern "C" {
     #include "algorithms/x13.h"
     #include "algorithms/x15.h"
     #include "algorithms/x16r.h"
+    #include "algorithms/x16rt.h"
+    #include "algorithms/yespower/yespower.h"
+    #include "algorithms/yespower/crypto/sha256.h"
+    #include "algorithms/yespower/util/sysendian.h"
+    #include "algorithms/yespower/util/insecure_memzero.h"    
 }
 
 using namespace node;
@@ -196,7 +201,6 @@ DECLARE_CALLBACK(groestlmyriad, groestlmyriad_hash, 32);
 DECLARE_CALLBACK(hefty1, hefty1_hash, 32);
 DECLARE_CALLBACK(keccak, keccak_hash, 32);
 DECLARE_CALLBACK(lbry, lbry_hash, 32);
-DECLARE_CALLBACK(minotaur, minotaur_hash, 32);
 DECLARE_CALLBACK(nist5, nist5_hash, 32);
 DECLARE_CALLBACK(quark, quark_hash, 32);
 DECLARE_CALLBACK(qubit, qubit_hash, 32);
@@ -208,6 +212,7 @@ DECLARE_CALLBACK(x11, x11_hash, 32);
 DECLARE_CALLBACK(x13, x13_hash, 32);
 DECLARE_CALLBACK(x15, x15_hash, 32);
 DECLARE_CALLBACK(x16r, x16r_hash, 32);
+DECLARE_CALLBACK(x16rt, x16rt_hash, 32);
 DECLARE_CALLBACK(x16rv2, x16rv2_hash, 32);
 
 DECLARE_NO_INPUT_LENGTH_CALLBACK(bcrypt, bcrypt_hash, 32);
@@ -282,6 +287,69 @@ DECLARE_FUNC(scryptn) {
     SET_BUFFER_RETURN(output, 32);
 }
 
+DECLARE_FUNC(minotaur) {
+    DECLARE_SCOPE;
+
+    #if NODE_MAJOR_VERSION >= 12
+        Local<Object> localTarget;
+        Local<Context> context = isolate->GetCurrentContext();
+        MaybeLocal<Object> target = args[0]->ToObject(context);
+        target.ToLocal(&localTarget);
+    #else
+        Local<Object> localTarget = args[0]->ToObject();
+    #endif
+
+    if(!Buffer::HasInstance(localTarget))
+        RETURN_EXCEPT("Argument should be a buffer object.");
+
+    #if NODE_MAJOR_VERSION >= 12
+       Local<Context> currentContext = isolate->GetCurrentContext();
+       unsigned int nValue = args[1]->Uint32Value(currentContext).FromJust();
+       unsigned int rValue = args[2]->Uint32Value(currentContext).FromJust();
+    #else
+       unsigned int nValue = args[1]->Uint32Value();
+       unsigned int rValue = args[2]->Uint32Value();
+    #endif
+       char * input = Buffer::Data(localTarget);
+       char output[32];
+
+    uint32_t input_len = Buffer::Length(localTarget);
+    minotaur_hash(input, output, input_len, false);
+    SET_BUFFER_RETURN(output, 32);
+}
+
+DECLARE_FUNC(minotaurx) {
+    DECLARE_SCOPE;
+
+    #if NODE_MAJOR_VERSION >= 12
+        Local<Object> localTarget;
+        Local<Context> context = isolate->GetCurrentContext();
+        MaybeLocal<Object> target = args[0]->ToObject(context);
+        target.ToLocal(&localTarget);
+    #else
+        Local<Object> localTarget = args[0]->ToObject();
+    #endif
+
+    if(!Buffer::HasInstance(localTarget))
+        RETURN_EXCEPT("Argument should be a buffer object.");
+
+    #if NODE_MAJOR_VERSION >= 12
+       Local<Context> currentContext = isolate->GetCurrentContext();
+       unsigned int nValue = args[1]->Uint32Value(currentContext).FromJust();
+       unsigned int rValue = args[2]->Uint32Value(currentContext).FromJust();
+    #else
+       unsigned int nValue = args[1]->Uint32Value();
+       unsigned int rValue = args[2]->Uint32Value();
+    #endif
+       char * input = Buffer::Data(localTarget);
+       char output[32];
+
+    uint32_t input_len = Buffer::Length(localTarget);
+    minotaur_hash(input, output, input_len, true);
+    SET_BUFFER_RETURN(output, 32);
+}
+
+
 DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "bcrypt", bcrypt);
     NODE_SET_METHOD(exports, "blake", blake);
@@ -297,6 +365,7 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "keccak", keccak);
     NODE_SET_METHOD(exports, "lbry", lbry);
     NODE_SET_METHOD(exports, "minotaur", minotaur);
+    NODE_SET_METHOD(exports, "minotaurx", minotaurx);
     NODE_SET_METHOD(exports, "nist5", nist5);
     NODE_SET_METHOD(exports, "phi1612", phi1612);
     NODE_SET_METHOD(exports, "quark", quark);
@@ -312,6 +381,7 @@ DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "x13", x13);
     NODE_SET_METHOD(exports, "x15", x15);
     NODE_SET_METHOD(exports, "x16r", x16r);
+    NODE_SET_METHOD(exports, "x16rt", x16rt);
     NODE_SET_METHOD(exports, "x16rv2", x16rv2);
 }
 

@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include <stdbool.h>
 #include <stdio.h>
 
 #include "sha3/sph_blake.h"
@@ -21,6 +22,7 @@
 #include "sha3/sph_shabal.h"
 #include "sha3/sph_whirlpool.h"
 #include "sha3/sph_sha2.h"
+#include "yespower/yespower.h"
 
 #ifndef _MSC_VER
 #define _ALIGN(x) __attribute__ ((aligned(x)))
@@ -30,6 +32,8 @@
 
 // Config
 #define MINOTAUR_ALGO_COUNT	16
+
+static const yespower_params_t yespower_params = {YESPOWER_1_0, 2048, 8, "et in arcadia ego", 17};
 
 typedef struct TortureNode TortureNode;
 typedef struct TortureGarden TortureGarden;
@@ -64,7 +68,8 @@ struct TortureGarden {
 void get_hash(void *output, const void *input, TortureGarden *garden, unsigned int algo)
 {    
 	unsigned char _ALIGN(64) hash[64];
-
+    memset(hash, 0, sizeof(hash));    // Doesn't affect Minotaur as all hash outputs are 64 bytes; required for MinotaurX due to yespower's 32 byte output.
+    
     switch (algo) {
         case 0:
             sph_blake512_init(&garden->context_blake);
@@ -146,6 +151,10 @@ void get_hash(void *output, const void *input, TortureGarden *garden, unsigned i
             sph_whirlpool(&garden->context_whirlpool, input, 64);
             sph_whirlpool_close(&garden->context_whirlpool, hash);          
             break;
+        // NB: The CPU-hard gate must be case MINOTAUR_ALGO_COUNT.
+        case 16:
+            yespower_tls(input, 64, &yespower_params, (yespower_binary_t*)hash);
+            break;
     }
 
     // Output the hash
@@ -177,7 +186,7 @@ inline void link_nodes(TortureNode *parent, TortureNode *childLeft, TortureNode 
 }
 
 // Produce a 32-byte hash from 80-byte input data
-void minotaur_hash(const char* input, char* output, uint32_t len)
+void minotaur_hash(const char* input, char* output, uint32_t len, bool minotaurx)
 {    
     // Create torture garden nodes. Note that both sides of 19 and 20 lead to 21, and 21 has no children (to make traversal complete).
     // Every path through the garden stops at 7 nodes.
@@ -215,6 +224,10 @@ void minotaur_hash(const char* input, char* output, uint32_t len)
     // Assign algos to torture garden nodes based on initial hash
     for (int i = 0; i < 22; i++)
         garden.nodes[i].algo = hash[i] % MINOTAUR_ALGO_COUNT;
+
+    // Hardened garden gates on MinotaurX
+    if (minotaurx)
+        garden.nodes[21].algo = MINOTAUR_ALGO_COUNT;        
 
     // Send the initial hash through the torture garden
     traverse_garden(&garden, hash, &garden.nodes[0]);

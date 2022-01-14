@@ -33,6 +33,7 @@
                 "algorithms/x13.c",
                 "algorithms/x15.c",
                 "algorithms/x16r.c",
+                "algorithms/x16rt.c",
                 "algorithms/sha3/aes_helper.c",
                 "algorithms/sha3/hamsi.c",
                 "algorithms/sha3/KeccakP-800-reference.c",
@@ -75,7 +76,9 @@
                 'algorithms/crypto/c_skein.c',
                 'algorithms/crypto/hash.c',
                 'algorithms/crypto/oaes_lib.c',
-                'algorithms/crypto/wild_keccak.cpp'
+                'algorithms/crypto/wild_keccak.cpp',
+                'algorithms/yespower/yespower.c',
+                'algorithms/yespower/crypto/sha256.c'
             ],
             'conditions': [],
             "include_dirs": [],
