@@ -35,7 +35,7 @@ extern "C" {
     #include "algorithms/yespower/yespower.h"
     #include "algorithms/yespower/crypto/sha256.h"
     #include "algorithms/yespower/util/sysendian.h"
-    #include "algorithms/yespower/util/insecure_memzero.h"    
+    #include "algorithms/yespower/util/insecure_memzero.h"
 }
 
 using namespace node;
@@ -245,10 +245,11 @@ DECLARE_FUNC(scrypt) {
        unsigned int nValue = args[1]->Uint32Value();
        unsigned int rValue = args[2]->Uint32Value();
     #endif
-       char * input = Buffer::Data(localTarget);
-       char output[32];
 
+    char output[32];
+    char * input = Buffer::Data(localTarget);
     uint32_t input_len = Buffer::Length(localTarget);
+
     scrypt_N_R_1_256(input, output, nValue, rValue, input_len);
     SET_BUFFER_RETURN(output, 32);
 }
@@ -302,18 +303,10 @@ DECLARE_FUNC(minotaur) {
     if(!Buffer::HasInstance(localTarget))
         RETURN_EXCEPT("Argument should be a buffer object.");
 
-    #if NODE_MAJOR_VERSION >= 12
-       Local<Context> currentContext = isolate->GetCurrentContext();
-       unsigned int nValue = args[1]->Uint32Value(currentContext).FromJust();
-       unsigned int rValue = args[2]->Uint32Value(currentContext).FromJust();
-    #else
-       unsigned int nValue = args[1]->Uint32Value();
-       unsigned int rValue = args[2]->Uint32Value();
-    #endif
-       char * input = Buffer::Data(localTarget);
-       char output[32];
-
+    char output[32];
+    char * input = Buffer::Data(localTarget);
     uint32_t input_len = Buffer::Length(localTarget);
+
     minotaur_hash(input, output, input_len, false);
     SET_BUFFER_RETURN(output, 32);
 }
@@ -333,18 +326,10 @@ DECLARE_FUNC(minotaurx) {
     if(!Buffer::HasInstance(localTarget))
         RETURN_EXCEPT("Argument should be a buffer object.");
 
-    #if NODE_MAJOR_VERSION >= 12
-       Local<Context> currentContext = isolate->GetCurrentContext();
-       unsigned int nValue = args[1]->Uint32Value(currentContext).FromJust();
-       unsigned int rValue = args[2]->Uint32Value(currentContext).FromJust();
-    #else
-       unsigned int nValue = args[1]->Uint32Value();
-       unsigned int rValue = args[2]->Uint32Value();
-    #endif
-       char * input = Buffer::Data(localTarget);
-       char output[32];
-
+    char output[32];
+    char * input = Buffer::Data(localTarget);
     uint32_t input_len = Buffer::Length(localTarget);
+
     minotaur_hash(input, output, input_len, true);
     SET_BUFFER_RETURN(output, 32);
 }
