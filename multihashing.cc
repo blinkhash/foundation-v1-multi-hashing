@@ -190,7 +190,6 @@ using namespace v8;
 
 #endif // NODE_MAJOR_VERSION >= 12
 
-DECLARE_CALLBACK(allium, allium_hash, 32);
 DECLARE_CALLBACK(blake, blake_hash, 32);
 DECLARE_CALLBACK(blake2s, blake2s_hash, 32);
 DECLARE_CALLBACK(c11, c11_hash, 32);
@@ -217,6 +216,7 @@ DECLARE_CALLBACK(x16r, x16r_hash, 32);
 DECLARE_CALLBACK(x16rt, x16rt_hash, 32);
 DECLARE_CALLBACK(x16rv2, x16rv2_hash, 32);
 
+DECLARE_NO_INPUT_LENGTH_CALLBACK(allium, allium_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(bcrypt, bcrypt_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(phi1612, phi1612_hash, 32);
 DECLARE_NO_INPUT_LENGTH_CALLBACK(tribus, tribus_hash, 32);
@@ -335,7 +335,6 @@ DECLARE_FUNC(minotaurx) {
     minotaur_hash(input, output, input_len, true);
     SET_BUFFER_RETURN(output, 32);
 }
-
 
 DECLARE_INIT(init) {
     NODE_SET_METHOD(exports, "allium", allium);

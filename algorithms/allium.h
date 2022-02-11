@@ -5,7 +5,9 @@
 extern "C" {
 #endif
 
-void allium_hash(const char* input, char* output, uint32_t len);
+#include <stdint.h>
+
+void allium_hash(const char* input, char* output);
 
 #ifdef __cplusplus
 }
