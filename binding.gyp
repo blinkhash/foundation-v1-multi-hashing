@@ -4,6 +4,7 @@
             "target_name": "multihashing",
             "sources": [
                 "multihashing.cc",
+                'algorithms/allium.c',
                 "algorithms/bcrypt.c",
                 "algorithms/blake.c",
                 "algorithms/blake2s.c",
@@ -60,6 +61,7 @@
                 "algorithms/sha3/sph_sha2.c",
                 "algorithms/sha3/sph_sha2big.c",
                 "algorithms/sha3/sph_tiger.c",
+                "algorithms/allium/lyra2.c",
                 'algorithms/cryptonote/cryptonight_dark_lite.c',
                 'algorithms/cryptonote/cryptonight_dark.c',
                 'algorithms/cryptonote/cryptonight_fast.c',
