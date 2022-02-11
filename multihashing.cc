@@ -4,6 +4,7 @@
 #include <stdint.h>
 
 extern "C" {
+    #include "algorithms/allium.h"
     #include "algorithms/bcrypt.h"
     #include "algorithms/blake.h"
     #include "algorithms/blake2s.h"
@@ -189,6 +190,7 @@ using namespace v8;
 
 #endif // NODE_MAJOR_VERSION >= 12
 
+DECLARE_CALLBACK(allium, allium_hash, 32);
 DECLARE_CALLBACK(blake, blake_hash, 32);
 DECLARE_CALLBACK(blake2s, blake2s_hash, 32);
 DECLARE_CALLBACK(c11, c11_hash, 32);
@@ -336,6 +338,7 @@ DECLARE_FUNC(minotaurx) {
 
 
 DECLARE_INIT(init) {
+    NODE_SET_METHOD(exports, "allium", allium);
     NODE_SET_METHOD(exports, "bcrypt", bcrypt);
     NODE_SET_METHOD(exports, "blake", blake);
     NODE_SET_METHOD(exports, "blake2s", blake2s);
