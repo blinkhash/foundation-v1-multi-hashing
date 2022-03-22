@@ -5,13 +5,13 @@
 [![Downloads](https://img.shields.io/npm/dm/foundation-multi-hashing.svg)](https://www.npmjs.com/package/foundation-multi-hashing)
 [![Version](https://img.shields.io/npm/v/foundation-multi-hashing.svg)](https://www.npmjs.com/package/foundation-multi-hashing)
 [![Known Vulnerabilities](https://snyk.io/test/npm/foundation-multi-hashing/badge.svg)](https://snyk.io/test/npm/foundation-multi-hashing)
-[![Discord](https://img.shields.io/discord/738590795384356904)](https://discord.gg/8xtHZFKJQY)
+[![Discord](https://img.shields.io/discord/738590795384356904)](https://discord.gg/rNjez6VgNF)
 
 This repository is a collection of hashing algorithms that are currently supported by Foundation. Each of these algorithms are leveraged by [foundation-stratum](https://github.com/blinkhash/foundation-stratum), which handles the majority of the mining process. To request for an unsupported algorithm to be added, open an issue or pull request and it will be addressed.  
 
 #### Need Support?
 
-If you need help with a code-related matter, the first place to look is our [Discord](https://discord.gg/8xtHZFKJQY), where the developers will be available to answer any questions. However, please do not come to me with issues regarding setup. Use Google and the existing documentation for that.
+If you need help with a code-related matter, the first place to look is our [Discord](https://discord.gg/rNjez6VgNF), where the developers will be available to answer any questions. However, please do not come to me with issues regarding setup. Use Google and the existing documentation for that.
 
 ---
 
