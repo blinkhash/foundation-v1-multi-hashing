@@ -93,26 +93,14 @@
             "include_dirs": [
                 ".",
                 "<!(node -e \"require('nan')\")",
-                "/usr/include",
-                "/usr/include/boost",
             ],
             "cflags_cc": [
-                "-std=c++11"
-                "-Wl,--whole-archive",
-                "-fPIC",
-                "-fexceptions"
+                "-std=c++0x"
             ],
             "defines": [
                 "HAVE_DECL_STRNLEN=1",
                 "HAVE_BYTESWAP_H=1"
             ],
-            "link_settings": {
-                "libraries": [
-                    "-Wl,-rpath,./build/Release/",
-                    "-lboost_system",
-                    "-lsodium"
-                ]
-            },
             'conditions': [
                 ['OS=="mac"', {
                     'xcode_settings': {
