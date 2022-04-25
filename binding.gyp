@@ -103,6 +103,13 @@
                 "HAVE_DECL_STRNLEN=1",
                 "HAVE_BYTESWAP_H=1"
             ],
+            "link_settings": {
+                "libraries": [
+                    "-Wl,-rpath,./build/Release/",
+                    "-lboost_system",
+                    "-lsodium"
+                ]
+            },
             'conditions': [
                 ['OS=="mac"', {
                     'xcode_settings': {
