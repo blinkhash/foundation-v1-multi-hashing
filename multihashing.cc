@@ -2,374 +2,568 @@
 #include <node_buffer.h>
 #include <v8.h>
 #include <stdint.h>
+#include <iostream>
+#include "nan.h"
 
-extern "C" {
-    #include "algorithms/allium.h"
-    #include "algorithms/bcrypt.h"
-    #include "algorithms/blake.h"
-    #include "algorithms/blake2s.h"
-    #include "algorithms/c11.h"
-    #include "algorithms/fresh.h"
-    #include "algorithms/fugue.h"
-    #include "algorithms/gost.h"
-    #include "algorithms/gr.h"
-    #include "algorithms/groestl.h"
-    #include "algorithms/hefty1.h"
-    #include "algorithms/keccak.h"
-    #include "algorithms/lbry.h"
-    #include "algorithms/minotaur.h"
-    #include "algorithms/nist5.h"
-    #include "algorithms/phi1612.h"
-    #include "algorithms/quark.h"
-    #include "algorithms/qubit.h"
-    #include "algorithms/scryptn.h"
-    #include "algorithms/sha256d.h"
-    #include "algorithms/shavite3.h"
-    #include "algorithms/skein.h"
-    #include "algorithms/tribus.h"
-    #include "algorithms/verthash.h"
-    #include "algorithms/x11.h"
-    #include "algorithms/x13.h"
-    #include "algorithms/x15.h"
-    #include "algorithms/x16r.h"
-    #include "algorithms/x16rt.h"
-    #include "algorithms/yespower/yespower.h"
-    #include "algorithms/yespower/crypto/sha256.h"
-    #include "algorithms/yespower/util/sysendian.h"
-    #include "algorithms/yespower/util/insecure_memzero.h"
-}
+// Main Imports
+#include "algorithms/main/allium/allium.h"
+#include "algorithms/main/blake/blake.h"
+#include "algorithms/main/c11/c11.h"
+#include "algorithms/main/equihash/equihash.h"
+#include "algorithms/main/fugue/fugue.h"
+#include "algorithms/main/ghostrider/ghostrider.h"
+#include "algorithms/main/groestl/groestl.h"
+#include "algorithms/main/keccak/keccak.h"
+#include "algorithms/main/minotaur/minotaur.h"
+#include "algorithms/main/nist5/nist5.h"
+#include "algorithms/main/quark/quark.h"
+#include "algorithms/main/qubit/qubit.h"
+#include "algorithms/main/scrypt/scrypt.h"
+#include "algorithms/main/sha256d/sha256d.h"
+#include "algorithms/main/skein/skein.h"
+#include "algorithms/main/verthash/verthash.h"
+#include "algorithms/main/x11/x11.h"
+#include "algorithms/main/x13/x13.h"
+#include "algorithms/main/x15/x15.h"
+#include "algorithms/main/x16r/x16r.h"
+#include "algorithms/main/x16rt/x16rt.h"
+
+// ProgPow Imports
+#include "algorithms/main/firopow/firopow.h"
+#include "algorithms/main/firopow/firopow.hpp"
+#include "algorithms/main/firopow/firopow_progpow.hpp"
+#include "algorithms/main/kawpow/kawpow.h"
+#include "algorithms/main/kawpow/kawpow.hpp"
+#include "algorithms/main/kawpow/kawpow_progpow.hpp"
+
+// Common Imports
+#include "algorithms/main/common/ethash/helpers.hpp"
 
 using namespace node;
 using namespace v8;
 
-#if NODE_MAJOR_VERSION >= 4
-
-#define DECLARE_INIT(x) \
-    void x(Local<Object> exports)
-
-#define DECLARE_FUNC(x) \
-    void x(const FunctionCallbackInfo<Value>& args)
-
-#define DECLARE_SCOPE \
-    v8::Isolate* isolate = args.GetIsolate();
-
-#define SET_BUFFER_RETURN(x, len) \
-    args.GetReturnValue().Set(Buffer::Copy(isolate, x, len).ToLocalChecked());
-
-#define SET_BOOLEAN_RETURN(x) \
-    args.GetReturnValue().Set(Boolean::New(isolate, x));
-
-#define RETURN_EXCEPT(msg) \
-    do { \
-        Local<String> localResult; \
-        MaybeLocal<String> result = String::NewFromUtf8(isolate, msg); \
-        result.ToLocal(&localResult); \
-        isolate->ThrowException(Exception::Error(localResult)); \
-        return; \
-    } while (0)
-
-#else
-
-#define DECLARE_INIT(x) \
-    void x(Handle<Object> exports)
-
-#define DECLARE_FUNC(x) \
-    Handle<Value> x(const Arguments& args)
-
-#define DECLARE_SCOPE \
-    HandleScope scope
-
-#define SET_BUFFER_RETURN(x, len) \
-    do { \
-        Buffer* buff = Buffer::New(x, len); \
-        return scope.Close(buff->handle_); \
-    } while (0)
-
-#define SET_BOOLEAN_RETURN(x) \
-    return scope.Close(Boolean::New(x));
-
-#define RETURN_EXCEPT(msg) \
-    const v8::Local<String> result = String::New(msg); \
-    return ThrowException(Exception::Error(result));
-
-#endif // NODE_MAJOR_VERSION
-
-#if NODE_MAJOR_VERSION >= 12
-
-#define DECLARE_CALLBACK(name, hash, output_len) \
-    DECLARE_FUNC(name) { \
-    DECLARE_SCOPE; \
- \
-    if (args.Length() < 1) \
-        RETURN_EXCEPT("You must provide one argument."); \
- \
-    Local<Object> localTarget; \
-    Local<Context> context = isolate->GetCurrentContext(); \
-    MaybeLocal<Object> target = args[0]->ToObject(context); \
-    target.ToLocal(&localTarget); \
- \
-    if(!Buffer::HasInstance(localTarget)) \
-        RETURN_EXCEPT("Argument should be a buffer object."); \
- \
-    char * input = Buffer::Data(localTarget); \
-    char output[output_len]; \
- \
-    uint32_t input_len = Buffer::Length(localTarget); \
- \
-    hash(input, output, input_len); \
- \
-    SET_BUFFER_RETURN(output, output_len); \
+#define THROW_ERROR_EXCEPTION(x) Nan::ThrowError(x)
+const char* ToCString(const Nan::Utf8String& value) {
+  return *value ? *value : "<string conversion failed>";
 }
 
-#define DECLARE_NO_INPUT_LENGTH_CALLBACK(name, hash, output_len) \
-    DECLARE_FUNC(name) { \
-    DECLARE_SCOPE; \
- \
-    if (args.Length() < 1) \
-        RETURN_EXCEPT("You must provide one argument."); \
- \
-    Local<Object> localTarget; \
-    Local<Context> context = isolate->GetCurrentContext(); \
-    MaybeLocal<Object> target = args[0]->ToObject(context); \
-    target.ToLocal(&localTarget); \
- \
-    if(!Buffer::HasInstance(localTarget)) \
-        RETURN_EXCEPT("Argument should be a buffer object."); \
- \
-    char * input = Buffer::Data(localTarget); \
-    char output[output_len]; \
- \
-    hash(input, output); \
- \
-    SET_BUFFER_RETURN(output, output_len); \
+// Allium Algorithm
+NAN_METHOD(allium) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  allium_hash(input, output);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
 }
 
-#else
+// Blake Algorithm
+NAN_METHOD(blake) {
 
-#define DECLARE_CALLBACK(name, hash, output_len) \
-    DECLARE_FUNC(name) { \
-    DECLARE_SCOPE; \
- \
-    if (args.Length() < 1) \
-        RETURN_EXCEPT("You must provide one argument."); \
- \
-    Local<Object> localTarget = args[0]->ToObject(); \
- \
-    if(!Buffer::HasInstance(localTarget)) \
-        RETURN_EXCEPT("Argument should be a buffer object."); \
- \
-    char * input = Buffer::Data(localTarget); \
-    char output[output_len]; \
- \
-    uint32_t input_len = Buffer::Length(localTarget); \
- \
-    hash(input, output, input_len); \
- \
-    SET_BUFFER_RETURN(output, output_len); \
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  blake_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
 }
 
-#define DECLARE_NO_INPUT_LENGTH_CALLBACK(name, hash, output_len) \
-    DECLARE_FUNC(name) { \
-    DECLARE_SCOPE; \
- \
-    if (args.Length() < 1) \
-        RETURN_EXCEPT("You must provide one argument."); \
- \
-    Local<Object> localTarget = args[0]->ToObject(); \
- \
-    if(!Buffer::HasInstance(localTarget)) \
-        RETURN_EXCEPT("Argument should be a buffer object."); \
- \
-    char * input = Buffer::Data(localTarget); \
-    char output[output_len]; \
- \
-    hash(input, output); \
- \
-    SET_BUFFER_RETURN(output, output_len); \
+// C11 Algorithm
+NAN_METHOD(c11) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  c11_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
 }
 
-#endif // NODE_MAJOR_VERSION >= 12
+// Equihash Algorithm
+NAN_METHOD(equihash) {
 
-DECLARE_CALLBACK(blake, blake_hash, 32);
-DECLARE_CALLBACK(blake2s, blake2s_hash, 32);
-DECLARE_CALLBACK(c11, c11_hash, 32);
-DECLARE_CALLBACK(fresh, fresh_hash, 32);
-DECLARE_CALLBACK(fugue, fugue_hash, 32);
-DECLARE_CALLBACK(ghostrider, gr_hash, 32);
-DECLARE_CALLBACK(gost, gost_hash, 32);
-DECLARE_CALLBACK(groestl, groestl_hash, 32);
-DECLARE_CALLBACK(groestlmyriad, groestlmyriad_hash, 32);
-DECLARE_CALLBACK(hefty1, hefty1_hash, 32);
-DECLARE_CALLBACK(keccak, keccak_hash, 32);
-DECLARE_CALLBACK(lbry, lbry_hash, 32);
-DECLARE_CALLBACK(nist5, nist5_hash, 32);
-DECLARE_CALLBACK(quark, quark_hash, 32);
-DECLARE_CALLBACK(qubit, qubit_hash, 32);
-DECLARE_CALLBACK(sha256d, sha256d_hash, 32);
-DECLARE_CALLBACK(shavite3, shavite3_hash, 32);
-DECLARE_CALLBACK(skein, skein_hash, 32);
-DECLARE_CALLBACK(verthash, verthash, 32);
-DECLARE_CALLBACK(x11, x11_hash, 32);
-DECLARE_CALLBACK(x13, x13_hash, 32);
-DECLARE_CALLBACK(x15, x15_hash, 32);
-DECLARE_CALLBACK(x16r, x16r_hash, 32);
-DECLARE_CALLBACK(x16rt, x16rt_hash, 32);
-DECLARE_CALLBACK(x16rv2, x16rv2_hash, 32);
+  // Handle Main Scope
+  Isolate* isolate = Isolate::GetCurrent();
+  HandleScope scope(isolate);
 
-DECLARE_NO_INPUT_LENGTH_CALLBACK(allium, allium_hash, 32);
-DECLARE_NO_INPUT_LENGTH_CALLBACK(bcrypt, bcrypt_hash, 32);
-DECLARE_NO_INPUT_LENGTH_CALLBACK(phi1612, phi1612_hash, 32);
-DECLARE_NO_INPUT_LENGTH_CALLBACK(tribus, tribus_hash, 32);
+  // Check Arguments for Errors [1]
+  if (info.Length() < 5)
+    return THROW_ERROR_EXCEPTION("You must provide five arguments.");
+  if (!info[3]->IsInt32() || !info[4]->IsInt32())
+    return THROW_ERROR_EXCEPTION("The fourth and fifth parameters should be equihash parameters (n, k)");
 
-DECLARE_FUNC(scrypt) {
-    DECLARE_SCOPE;
+  // Define Passed Parameters
+  Isolate *argsIsolate = info.GetIsolate();
+  Local<Context> context = argsIsolate->GetCurrentContext();
+  Local<Object> header = info[0]->ToObject(context).ToLocalChecked();
+  Local<Object> solution = info[1]->ToObject(context).ToLocalChecked();
 
-    if (args.Length() < 3)
-        RETURN_EXCEPT("You must provide buffer to hash, N value, and R value");
+  // Check Arguments for Errors [2]
+  if (!Buffer::HasInstance(header) || !Buffer::HasInstance(solution))
+    return THROW_ERROR_EXCEPTION("The first two arguments should be buffer objects");
+  if (!info[2]->IsString())
+    return THROW_ERROR_EXCEPTION("The third argument should be the personalization string");
 
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Object> localTarget;
-        Local<Context> context = isolate->GetCurrentContext();
-        MaybeLocal<Object> target = args[0]->ToObject(context);
-        target.ToLocal(&localTarget);
-    #else
-        Local<Object> localTarget = args[0]->ToObject();
-    #endif
+  // Header Length !== 140
+  const char *hdr = Buffer::Data(header);
+  if (Buffer::Length(header) != 140) {
+    info.GetReturnValue().Set(false);
+    return;
+  }
 
-    if(!Buffer::HasInstance(localTarget))
-        RETURN_EXCEPT("Argument should be a buffer object.");
+  // Process Passed Parameters
+  const char *soln = Buffer::Data(solution);
+  vector<unsigned char> vecSolution(soln, soln + Buffer::Length(solution));
+  Nan::Utf8String str(info[2]);
+  const char* personalizationString = ToCString(str);
+  unsigned int N = info[3].As<Uint32>()->Value();
+  unsigned int K = info[4].As<Uint32>()->Value();
 
-    #if NODE_MAJOR_VERSION >= 12
-       Local<Context> currentContext = isolate->GetCurrentContext();
-       unsigned int nValue = args[1]->Uint32Value(currentContext).FromJust();
-       unsigned int rValue = args[2]->Uint32Value(currentContext).FromJust();
-    #else
-       unsigned int nValue = args[1]->Uint32Value();
-       unsigned int rValue = args[2]->Uint32Value();
-    #endif
-
-    char output[32];
-    char * input = Buffer::Data(localTarget);
-    uint32_t input_len = Buffer::Length(localTarget);
-
-    scrypt_N_R_1_256(input, output, nValue, rValue, input_len);
-    SET_BUFFER_RETURN(output, 32);
+  // Hash Input Data and Check if Valid Solution
+  bool isValid;
+  crypto_generichash_blake2b_state state;
+  EhInitialiseState(N, K, state, personalizationString);
+  crypto_generichash_blake2b_update(&state, (const unsigned char*)hdr, 140);
+  EhIsValidSolution(N, K, state, vecSolution, isValid);
+  info.GetReturnValue().Set(isValid);
 }
 
-DECLARE_FUNC(scryptn) {
-    DECLARE_SCOPE;
+// Firopow Algorithm
+NAN_METHOD(firopow) {
 
-    if (args.Length() < 2)
-        RETURN_EXCEPT("You must provide buffer to hash and N factor.");
+  // Check Arguments for Errors
+  if (info.Length() < 5)
+    return THROW_ERROR_EXCEPTION("You must provide five arguments.");
 
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Object> localTarget;
-        Local<Context> context = isolate->GetCurrentContext();
-        MaybeLocal<Object> target = args[0]->ToObject(context);
-        target.ToLocal(&localTarget);
-    #else
-        Local<Object> localTarget = args[0]->ToObject();
-    #endif
+  // Process/Define Passed Parameters [1]
+  const ethash::hash256* header_hash_ptr = (ethash::hash256*)Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint64_t* nonce64_ptr = (uint64_t*)Buffer::Data(Nan::To<v8::Object>(info[1]).ToLocalChecked());
+  int block_height = info[2]->IntegerValue(Nan::GetCurrentContext()).FromJust();
+  const ethash::hash256* mix_hash_ptr = (ethash::hash256*)Buffer::Data(Nan::To<v8::Object>(info[3]).ToLocalChecked());
+  ethash::hash256* hash_out_ptr = (ethash::hash256*)Buffer::Data(Nan::To<v8::Object>(info[4]).ToLocalChecked());
 
-    if(!Buffer::HasInstance(localTarget))
-        RETURN_EXCEPT("Argument should be a buffer object.");
+  // Process/Define Passed Parameters [2]
+  static firopow_main::epoch_context_ptr context{nullptr, nullptr};
+  const auto epoch_number = firopow_main::get_epoch_number(block_height);
+  if (!context || context->epoch_number != epoch_number)
+      context = firopow_main::create_epoch_context(epoch_number);
 
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Context> currentContext = isolate->GetCurrentContext();
-        unsigned int nFactor = args[1]->Uint32Value(currentContext).FromJust();
-    #else
-        unsigned int nFactor = args[1]->Uint32Value();
-    #endif
-
-    char output[32];
-    char * input = Buffer::Data(localTarget);
-    uint32_t input_len = Buffer::Length(localTarget);
-    unsigned int N = 1 << nFactor;
-
-    scrypt_N_R_1_256(input, output, N, 1, input_len);
-    SET_BUFFER_RETURN(output, 32);
+  // Hash Input Data and Check if Valid Solution
+  bool is_valid = firopow_progpow::verify(*context, block_height, header_hash_ptr, *mix_hash_ptr, *nonce64_ptr, hash_out_ptr);
+  if (is_valid) info.GetReturnValue().Set(Nan::True());
+  else info.GetReturnValue().Set(Nan::False());
 }
 
-DECLARE_FUNC(minotaur) {
-    DECLARE_SCOPE;
+// Fugue Algorithm
+NAN_METHOD(fugue) {
 
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Object> localTarget;
-        Local<Context> context = isolate->GetCurrentContext();
-        MaybeLocal<Object> target = args[0]->ToObject(context);
-        target.ToLocal(&localTarget);
-    #else
-        Local<Object> localTarget = args[0]->ToObject();
-    #endif
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
 
-    if(!Buffer::HasInstance(localTarget))
-        RETURN_EXCEPT("Argument should be a buffer object.");
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
 
-    char output[32];
-    char * input = Buffer::Data(localTarget);
-    uint32_t input_len = Buffer::Length(localTarget);
-
-    minotaur_hash(input, output, input_len, false);
-    SET_BUFFER_RETURN(output, 32);
+  // Hash Input Data and Return Output
+  fugue_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
 }
 
-DECLARE_FUNC(minotaurx) {
-    DECLARE_SCOPE;
+// Ghostrider Algorithm
+NAN_METHOD(ghostrider) {
 
-    #if NODE_MAJOR_VERSION >= 12
-        Local<Object> localTarget;
-        Local<Context> context = isolate->GetCurrentContext();
-        MaybeLocal<Object> target = args[0]->ToObject(context);
-        target.ToLocal(&localTarget);
-    #else
-        Local<Object> localTarget = args[0]->ToObject();
-    #endif
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
 
-    if(!Buffer::HasInstance(localTarget))
-        RETURN_EXCEPT("Argument should be a buffer object.");
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
 
-    char output[32];
-    char * input = Buffer::Data(localTarget);
-    uint32_t input_len = Buffer::Length(localTarget);
-
-    minotaur_hash(input, output, input_len, true);
-    SET_BUFFER_RETURN(output, 32);
+  // Hash Input Data and Return Output
+  ghostrider_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
 }
 
-DECLARE_INIT(init) {
-    NODE_SET_METHOD(exports, "allium", allium);
-    NODE_SET_METHOD(exports, "bcrypt", bcrypt);
-    NODE_SET_METHOD(exports, "blake", blake);
-    NODE_SET_METHOD(exports, "blake2s", blake2s);
-    NODE_SET_METHOD(exports, "c11", c11);
-    NODE_SET_METHOD(exports, "fresh", fresh);
-    NODE_SET_METHOD(exports, "fugue", fugue);
-    NODE_SET_METHOD(exports, "gost", gost);
-    NODE_SET_METHOD(exports, "ghostrider", ghostrider);
-    NODE_SET_METHOD(exports, "groestl", groestl);
-    NODE_SET_METHOD(exports, "groestlmyriad", groestlmyriad);
-    NODE_SET_METHOD(exports, "hefty1", hefty1);
-    NODE_SET_METHOD(exports, "keccak", keccak);
-    NODE_SET_METHOD(exports, "lbry", lbry);
-    NODE_SET_METHOD(exports, "minotaur", minotaur);
-    NODE_SET_METHOD(exports, "minotaurx", minotaurx);
-    NODE_SET_METHOD(exports, "nist5", nist5);
-    NODE_SET_METHOD(exports, "phi1612", phi1612);
-    NODE_SET_METHOD(exports, "quark", quark);
-    NODE_SET_METHOD(exports, "qubit", qubit);
-    NODE_SET_METHOD(exports, "scrypt", scrypt);
-    NODE_SET_METHOD(exports, "scryptn", scryptn);
-    NODE_SET_METHOD(exports, "sha256d", sha256d);
-    NODE_SET_METHOD(exports, "shavite3", shavite3);
-    NODE_SET_METHOD(exports, "skein", skein);
-    NODE_SET_METHOD(exports, "tribus", tribus);
-    NODE_SET_METHOD(exports, "verthash", verthash);
-    NODE_SET_METHOD(exports, "x11", x11);
-    NODE_SET_METHOD(exports, "x13", x13);
-    NODE_SET_METHOD(exports, "x15", x15);
-    NODE_SET_METHOD(exports, "x16r", x16r);
-    NODE_SET_METHOD(exports, "x16rt", x16rt);
-    NODE_SET_METHOD(exports, "x16rv2", x16rv2);
+// Groestl Algorithm
+NAN_METHOD(groestl) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  groestl_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// Kawpow Algorithm
+NAN_METHOD(kawpow) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 5)
+    return THROW_ERROR_EXCEPTION("You must provide five arguments.");
+
+  // Process/Define Passed Parameters [1]
+  const ethash::hash256* header_hash_ptr = (ethash::hash256*)Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint64_t* nonce64_ptr = (uint64_t*)Buffer::Data(Nan::To<v8::Object>(info[1]).ToLocalChecked());
+  int block_height = info[2]->IntegerValue(Nan::GetCurrentContext()).FromJust();
+  const ethash::hash256* mix_hash_ptr = (ethash::hash256*)Buffer::Data(Nan::To<v8::Object>(info[3]).ToLocalChecked());
+  ethash::hash256* hash_out_ptr = (ethash::hash256*)Buffer::Data(Nan::To<v8::Object>(info[4]).ToLocalChecked());
+
+  // Process/Define Passed Parameters [2]
+  static kawpow_main::epoch_context_ptr context{nullptr, nullptr};
+  const auto epoch_number = kawpow_main::get_epoch_number(block_height);
+  if (!context || context->epoch_number != epoch_number)
+      context = kawpow_main::create_epoch_context(epoch_number);
+
+  // Hash Input Data and Check if Valid Solution
+  bool is_valid = kawpow_progpow::verify(*context, block_height, header_hash_ptr, *mix_hash_ptr, *nonce64_ptr, hash_out_ptr);
+  if (is_valid) info.GetReturnValue().Set(Nan::True());
+  else info.GetReturnValue().Set(Nan::False());
+}
+
+// Keccak Algorithm
+NAN_METHOD(keccak) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  keccak_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// Minotaur Algorithm
+NAN_METHOD(minotaur) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  minotaur_hash(input, output, input_len, false);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// MinotaurX Algorithm
+NAN_METHOD(minotaurx) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  minotaur_hash(input, output, input_len, true);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// Nist5 Algorithm
+NAN_METHOD(nist5) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  nist5_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// Quark Algorithm
+NAN_METHOD(quark) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  quark_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// Qubit Algorithm
+NAN_METHOD(qubit) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  qubit_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// Scrypt Algorithm
+NAN_METHOD(scrypt) {
+
+  // Handle Main Scope
+  Isolate* isolate = Isolate::GetCurrent();
+  HandleScope scope(isolate);
+
+  // Check Arguments for Errors [1]
+  if (info.Length() < 3)
+    return THROW_ERROR_EXCEPTION("You must provide an input buffer, as well as an nValue and rValue.");
+  if (!info[1]->IsInt32() || !info[2]->IsInt32())
+    return THROW_ERROR_EXCEPTION("The first and second parameters should be scrypt parameters (n, r)");
+
+  // Define Passed Parameters
+  Isolate *argsIsolate = info.GetIsolate();
+  Local<Context> context = argsIsolate->GetCurrentContext();
+  Local<Object> header = info[0]->ToObject(context).ToLocalChecked();
+  unsigned int N = info[1].As<Uint32>()->Value();
+  unsigned int R = info[2].As<Uint32>()->Value();
+
+  // Check Arguments for Errors [2]
+  if (!Buffer::HasInstance(header))
+    return THROW_ERROR_EXCEPTION("Argument should be a buffer object.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(header);
+  uint32_t input_len = Buffer::Length(header);
+  char output[32];
+
+  // Hash Input Data and Return Output
+  scrypt_N_R_1_256(input, output, N, R, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// Sha256d Algorithm
+NAN_METHOD(sha256d) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  sha256d_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// Skein Algorithm
+NAN_METHOD(skein) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  skein_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// Verthash Algorithm
+NAN_METHOD(verthash) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  verthash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// X11 Algorithm
+NAN_METHOD(x11) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  x11_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// X13 Algorithm
+NAN_METHOD(x13) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  x13_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// X15 Algorithm
+NAN_METHOD(x15) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  x15_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// X16r Algorithm
+NAN_METHOD(x16r) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  x16r_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// X16rt Algorithm
+NAN_METHOD(x16rt) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  x16rt_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// X16rv2 Algorithm
+NAN_METHOD(x16rv2) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  uint32_t input_len = Buffer::Length(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  x16rv2_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+NAN_MODULE_INIT(init) {
+  Nan::Set(target, Nan::New("allium").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(allium)).ToLocalChecked());
+  Nan::Set(target, Nan::New("blake").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(blake)).ToLocalChecked());
+  Nan::Set(target, Nan::New("c11").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(c11)).ToLocalChecked());
+  Nan::Set(target, Nan::New("equihash").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(equihash)).ToLocalChecked());
+  Nan::Set(target, Nan::New("firopow").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(firopow)).ToLocalChecked());
+  Nan::Set(target, Nan::New("fugue").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(fugue)).ToLocalChecked());
+  Nan::Set(target, Nan::New("ghostrider").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(ghostrider)).ToLocalChecked());
+  Nan::Set(target, Nan::New("groestl").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(groestl)).ToLocalChecked());
+  Nan::Set(target, Nan::New("kawpow").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(kawpow)).ToLocalChecked());
+  Nan::Set(target, Nan::New("keccak").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(keccak)).ToLocalChecked());
+  Nan::Set(target, Nan::New("minotaur").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(minotaur)).ToLocalChecked());
+  Nan::Set(target, Nan::New("minotaurx").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(minotaurx)).ToLocalChecked());
+  Nan::Set(target, Nan::New("nist5").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(nist5)).ToLocalChecked());
+  Nan::Set(target, Nan::New("quark").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(quark)).ToLocalChecked());
+  Nan::Set(target, Nan::New("qubit").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(qubit)).ToLocalChecked());
+  Nan::Set(target, Nan::New("scrypt").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(scrypt)).ToLocalChecked());
+  Nan::Set(target, Nan::New("sha256d").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(sha256d)).ToLocalChecked());
+  Nan::Set(target, Nan::New("skein").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(skein)).ToLocalChecked());
+  Nan::Set(target, Nan::New("verthash").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(verthash)).ToLocalChecked());
+  Nan::Set(target, Nan::New("x11").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(x11)).ToLocalChecked());
+  Nan::Set(target, Nan::New("x13").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(x13)).ToLocalChecked());
+  Nan::Set(target, Nan::New("x15").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(x15)).ToLocalChecked());
+  Nan::Set(target, Nan::New("x16r").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(x16r)).ToLocalChecked());
+  Nan::Set(target, Nan::New("x16rt").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(x16rt)).ToLocalChecked());
+  Nan::Set(target, Nan::New("x16rv2").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(x16rv2)).ToLocalChecked());
 }
 
 NODE_MODULE(multihashing, init)

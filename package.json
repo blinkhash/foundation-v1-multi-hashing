@@ -1,39 +1,49 @@
 {
-    "name": "foundation-multi-hashing",
-    "version": "0.0.8",
-    "main": "./index.js",
-    "keywords": [
-        "scrypt",
-        "script-n",
-        "x11",
-        "quark",
-        "keccak_hash",
-        "skein",
-        "bcrypt",
-        "keccak",
-        "blake",
-        "shavite",
-        "fugue"
-    ],
-    "homepage": "https://github.com/blinkhash/foundation-multi-hashing",
-    "bugs": {
-        "url": "https://github.com/blinkhash/foundation-multi-hashing/issues"
-    },
-    "license": "GPL-2.0",
-    "author": {
-        "name": "Nick Sarris"
-    },
-    "scripts": {
-        "test": ""
-    },
-    "contributors": [],
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/blinkhash/foundation-multi-hashing.git"
-    },
-    "dependencies": {
-        "bindings": "^1.3.0",
-        "nan": "^2.15.0"
-    },
-    "readmeFilename": "README.md"
+  "name": "foundation-multi-hashing",
+  "version": "0.1.1",
+  "main": "./index.js",
+  "keywords": [
+    "scrypt",
+    "script-n",
+    "x11",
+    "quark",
+    "keccak_hash",
+    "skein",
+    "bcrypt",
+    "keccak",
+    "blake",
+    "shavite",
+    "fugue"
+  ],
+  "homepage": "https://github.com/blinkhash/foundation-multi-hashing",
+  "bugs": {
+    "url": "https://github.com/blinkhash/foundation-multi-hashing/issues"
+  },
+  "license": "GPL-2.0",
+  "author": {
+    "name": "Nick Sarris"
+  },
+  "jest": {
+    "collectCoverage": true,
+    "verbose": true
+  },
+  "scripts": {
+    "test": "jest --coverage"
+  },
+  "contributors": [],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/blinkhash/foundation-multi-hashing.git"
+  },
+  "dependencies": {
+    "bindings": "^1.3.0",
+    "libsodium": "^0.7.3",
+    "nan": "^2.15.0",
+    "node-gyp": "^9.0.0"
+  },
+  "devDependencies": {
+    "cmake-js": "^6.3.0",
+    "jest": "^27.5.1"
+  },
+  "readmeFilename": "README.md"
 }

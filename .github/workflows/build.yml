@@ -19,3 +19,14 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm install
+      - run: npm test
+  coverage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Save Coverage Checks
+        uses: actions/setup-node@v1
+        with:
+          node-version: 12.16
+      - run: npm install && npm install -g codecov
+      - run: npm run test && codecov
