@@ -8,6 +8,7 @@
 // Main Imports
 #include "algorithms/main/allium/allium.h"
 #include "algorithms/main/blake/blake.h"
+#include "algorithms/main/blake/blake2s.h"
 #include "algorithms/main/c11/c11.h"
 #include "algorithms/main/equihash/equihash.h"
 #include "algorithms/main/fugue/fugue.h"
@@ -77,6 +78,22 @@ NAN_METHOD(blake) {
 
   // Hash Input Data and Return Output
   blake_hash(input, output, input_len);
+  info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
+}
+
+// Blake Algorithm
+NAN_METHOD(blake2s) {
+
+  // Check Arguments for Errors
+  if (info.Length() < 1)
+    return THROW_ERROR_EXCEPTION("You must provide one argument.");
+
+  // Process/Define Passed Parameters
+  char * input = Buffer::Data(Nan::To<v8::Object>(info[0]).ToLocalChecked());
+  char output[32];
+
+  // Hash Input Data and Return Output
+  blake2s_hash(input, output);
   info.GetReturnValue().Set(Nan::CopyBuffer(output, 32).ToLocalChecked());
 }
 
@@ -541,6 +558,7 @@ NAN_METHOD(x16rv2) {
 NAN_MODULE_INIT(init) {
   Nan::Set(target, Nan::New("allium").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(allium)).ToLocalChecked());
   Nan::Set(target, Nan::New("blake").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(blake)).ToLocalChecked());
+  Nan::Set(target, Nan::New("blake2s").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(blake2s)).ToLocalChecked());
   Nan::Set(target, Nan::New("c11").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(c11)).ToLocalChecked());
   Nan::Set(target, Nan::New("equihash").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(equihash)).ToLocalChecked());
   Nan::Set(target, Nan::New("firopow").ToLocalChecked(), Nan::GetFunction(Nan::New<FunctionTemplate>(firopow)).ToLocalChecked());

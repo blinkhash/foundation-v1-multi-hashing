@@ -8,6 +8,7 @@
                 # Main Sources
                 "algorithms/main/allium/allium.c",
                 "algorithms/main/blake/blake.c",
+                "algorithms/main/blake/blake2s.c",
                 "algorithms/main/c11/c11.c",
                 "algorithms/main/equihash/equihash.cpp",
                 "algorithms/main/fugue/fugue.c",
@@ -36,7 +37,6 @@
                 "algorithms/main/kawpow/kawpow_progpow.cpp",
 
                 # Common Sources
-                "algorithms/main/common/utils/blake2s.c",
                 "algorithms/main/common/utils/lyra2.c",
                 "algorithms/main/common/utils/sponge.c",
                 "algorithms/main/common/utils/sha256c.c",

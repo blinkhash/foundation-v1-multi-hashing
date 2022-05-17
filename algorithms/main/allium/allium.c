@@ -3,8 +3,8 @@
 #include <string.h>
 #include <stdio.h>
 
+#include "../blake/blake2s.h"
 #include "../common/utils/lyra2.h"
-#include "../common/utils/blake2s.h"
 #include "../common/sha3/sph_blake.h"
 #include "../common/sha3/sph_groestl.h"
 #include "../common/sha3/sph_cubehash.h"

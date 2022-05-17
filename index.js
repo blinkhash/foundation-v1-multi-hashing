@@ -24,6 +24,12 @@ module.exports = {
    * @param input {Buffer} Initial buffer to hash
    * @returns {Buffer} Hashing result
    */
+  'blake2s': algorithms.blake2s,
+
+  /**
+   * @param input {Buffer} Initial buffer to hash
+   * @returns {Buffer} Hashing result
+   */
   'c11': algorithms.c11,
 
   /**
