@@ -45,7 +45,7 @@
   if (variant == 1 && len < 43) \
   { \
     fprintf(stderr, "Cryptonight variant 1 needs at least 43 bytes of data"); \
-    _exit(1); \
+    exit(1); \
   } \
   const uint64_t tweak1_2 = (variant == 1) ? *(const uint64_t*)(((const uint8_t*)input)+35) ^ state.hs.w[24] : 0
 
@@ -196,7 +196,7 @@ void cryptonight_soft_shell_hash(const char* input, char* output, uint32_t len, 
     uint8_t c[AES_BLOCK_SIZE];
     uint8_t aes_key[AES_KEY_SIZE];
     oaes_ctx* aes_ctx;
-    
+
 #if defined(_MSC_VER)
     uint8_t *long_state = (uint8_t *)_malloca(scratchpad);
 #else

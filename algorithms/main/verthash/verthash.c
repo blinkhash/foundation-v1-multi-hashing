@@ -4,6 +4,7 @@
 #include <time.h>
 #include <string.h>
 
+#include "verthash.h"
 #include "../common/sha3/sha3.h"
 
 #ifdef _MSC_VER
