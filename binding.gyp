@@ -21,6 +21,7 @@
                 "algorithms/main/qubit/qubit.c",
                 "algorithms/main/scrypt/scrypt.c",
                 "algorithms/main/sha256d/sha256d.c",
+                "algorithms/main/sha512256d/sha512256d.c",
                 "algorithms/main/skein/skein.c",
                 "algorithms/main/verthash/verthash.c",
                 "algorithms/main/x11/x11.c",

@@ -134,6 +134,12 @@ module.exports = {
    * @param input {Buffer} Initial buffer to hash
    * @returns {Buffer} Hashing result
    */
+  'sha512256d': algorithms.sha512256d,
+
+  /**
+   * @param input {Buffer} Initial buffer to hash
+   * @returns {Buffer} Hashing result
+   */
   'skein': algorithms.skein,
 
   /**
